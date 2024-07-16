@@ -99,10 +99,27 @@ export const getCompanyData = async (req, res) => {
     if (!company) return res.status(404).json({ error: 'Company not found' })
 
     const jobs = await Job.find({ addedBy: company.companyHR._id })
+
     res.json({
       company,
-      "This Company's Jobs": jobs,
+      "This Company's Jobs":
+        jobs.length > 0 ? jobs : 'This company has no jobs for now.',
     })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
+
+// Search for a Company by Name
+export const searchCompany = async (req, res) => {
+  const { name } = req.query
+
+  try {
+    const companies = await Company.find({ companyName: new RegExp(name, 'i') })
+    if (companies.length < 1) {
+      return res.status(404).json({ error: 'No companies match this name.' })
+    }
+    res.json(companies)
   } catch (err) {
     res.status(500).json({ error: err.message })
   }
