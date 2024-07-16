@@ -189,3 +189,30 @@ export const getAccountsByRecoveryEmail = async (req, res) => {
     res.status(500).json({ error: err.message })
   }
 }
+
+// Update Password
+export const updatePassword = async (req, res) => {
+  const { error } = updatePasswordSchema.validate(req.body)
+  if (error) return res.status(400).json({ error: error.details[0].message })
+
+  const userId = req.user.id
+  const { oldPassword, newPassword } = req.body
+
+  try {
+    const user = await User.findById(userId)
+    const validPassword = await bcrypt.compare(oldPassword, user.password)
+    if (!validPassword)
+      return res.status(400).json({ error: 'Invalid old password' })
+    if (oldPassword === newPassword)
+      return res
+        .status(400)
+        .json({ error: 'New password cannot be the same as old password' })
+    const hashedPassword = await bcrypt.hash(newPassword, 10)
+    user.password = hashedPassword
+    await user.save()
+
+    res.json({ message: 'Password updated successfully' })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}

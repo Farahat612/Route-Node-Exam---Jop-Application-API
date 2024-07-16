@@ -8,6 +8,7 @@ import {
   getUserAccountData,
   getProfileDataForAnotherUser,
   getAccountsByRecoveryEmail,
+  updatePassword
 } from '../controllers/userController.js'
 import auth from '../middleware/auth.js'
 
@@ -20,5 +21,6 @@ router.delete('/deleteAccount', auth, deleteAccount)
 router.get('/getUserAccountData', auth, getUserAccountData)
 router.get('/getProfileDataForAnotherUser', auth, getProfileDataForAnotherUser)
 router.get('/getAccountsByRecoveryEmail', auth, getAccountsByRecoveryEmail)
+router.put('/updatePassword', auth, updatePassword)
 
 export default router
