@@ -1,12 +1,10 @@
-import Job from '../models/Job.js'
-import Company from '../models/Company.js'
 import Application from '../models/Application.js'
-import Joi from 'joi'
+import Company from '../models/Company.js'
+import Job from '../models/Job.js'
 import {
+  filterJobSchema,
   jobSchema,
   updateJobSchema,
-  applyJobSchema,
-  filterJobSchema,
 } from '../schemas/jobSchemas.js'
 
 // Add Job
@@ -172,6 +170,23 @@ export const getJobsByFilters = async (req, res) => {
       message: 'Jobs retrieved successfully',
       jobs,
     })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+}
+
+// Apply for a Job
+export const applyToJob = async (req, res) => {
+  try {
+    const newApplication = new Application({
+      jobId: req.body.jobId,
+      userId: req.user._id,
+      userTechSkills: req.body.userTechSkills,
+      userSoftSkills: req.body.userSoftSkills,
+      userResume: req.file.path, // Store the file path
+    })
+    const savedApplication = await newApplication.save()
+    res.status(201).json(savedApplication)
   } catch (error) {
     res.status(500).json({ error: error.message })
   }

@@ -28,7 +28,6 @@ export const applyJobSchema = Joi.object({
   jobId: Joi.string().required(),
   userTechSkills: Joi.array().items(Joi.string()).required(),
   userSoftSkills: Joi.array().items(Joi.string()).required(),
-  userResume: Joi.string().required(), // Path to the resume
 })
 
 export const filterJobSchema = Joi.object({
