@@ -68,3 +68,24 @@ export const updateCompany = async (req, res) => {
     res.status(500).json({ error: err.message })
   }
 }
+
+// Delete Company Data
+export const deleteCompany = async (req, res) => {
+  const companyId = req.params.companyId
+
+  try {
+    const company = await Company.findById(companyId)
+    if (!company) return res.status(404).json({ error: 'Company not found' })
+
+    if (company.companyHR.toString() !== req.user.id) {
+      return res
+        .status(403)
+        .json({ error: 'Forbidden: You do not have the right permissions' })
+    }
+
+    await Company.findByIdAndDelete(companyId)
+    res.json({ message: 'Company deleted successfully' })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
