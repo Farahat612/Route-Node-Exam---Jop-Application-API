@@ -154,3 +154,18 @@ export const getUserAccountData = async (req, res) => {
     res.status(500).json({ error: err.message })
   }
 }
+
+// Get Profile Data for Another User
+export const getProfileDataForAnotherUser = async (req, res) => {
+  const {userId} = req.query
+
+  try {
+    const user = await User.findById(userId)
+    res.json({
+      message: 'Profile data retrieved successfully',
+      user,
+    })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
