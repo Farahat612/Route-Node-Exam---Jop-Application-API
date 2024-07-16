@@ -157,13 +157,33 @@ export const getUserAccountData = async (req, res) => {
 
 // Get Profile Data for Another User
 export const getProfileDataForAnotherUser = async (req, res) => {
-  const {userId} = req.query
+  const { userId } = req.query
 
   try {
     const user = await User.findById(userId)
     res.json({
       message: 'Profile data retrieved successfully',
       user,
+    })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
+
+// Get All Accounts Associated to a Specific Recovery Email
+export const getAccountsByRecoveryEmail = async (req, res) => {
+  const { email } = req.query
+
+  try {
+    const users = await User.find({ recoveryEmail: email })
+    if (users.length === 0) {
+      return res.json({
+        message: 'No accounts found for the specified recovery email.',
+      })
+    }
+    res.json({
+      message: 'Accounts retrieved successfully',
+      users,
     })
   } catch (err) {
     res.status(500).json({ error: err.message })
