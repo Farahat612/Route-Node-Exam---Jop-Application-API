@@ -7,6 +7,7 @@ import {
   addCompany,
   updateCompany,
   deleteCompany,
+  getCompanyData,
 } from '../controllers/companyController.js'
 
 const router = express.Router()
@@ -23,6 +24,12 @@ router.delete(
   auth,
   authorize('Company_HR'),
   deleteCompany
+)
+router.get(
+  '/companyData/:companyId',
+  auth,
+  authorize('Company_HR'),
+  getCompanyData
 )
 
 export default router

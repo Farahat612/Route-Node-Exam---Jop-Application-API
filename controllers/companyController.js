@@ -89,3 +89,21 @@ export const deleteCompany = async (req, res) => {
     res.status(500).json({ error: err.message })
   }
 }
+
+// Get Company Data
+export const getCompanyData = async (req, res) => {
+  const companyId = req.params.companyId
+
+  try {
+    const company = await Company.findById(companyId).populate('companyHR')
+    if (!company) return res.status(404).json({ error: 'Company not found' })
+
+    const jobs = await Job.find({ addedBy: company.companyHR._id })
+    res.json({
+      company,
+      "This Company's Jobs": jobs,
+    })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
