@@ -124,3 +124,17 @@ export const updateAccount = async (req, res) => {
     res.status(500).json({ error: err.message })
   }
 }
+
+
+// deleteAccount
+export const deleteAccount = async (req, res) => {
+  const userId = req.user.id
+
+  try {
+    await User.findByIdAndDelete(userId)
+    res.json({ message: 'Account deleted successfully' })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
+
