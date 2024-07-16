@@ -3,7 +3,7 @@ import path from 'path'
 
 // Set storage engine
 const storage = multer.diskStorage({
-  destination: '../uploads/resumes', // Folder to store resumes
+  destination: './uploads/resumes', // Folder to store resumes
   filename: function (req, file, cb) {
     cb(
       null,

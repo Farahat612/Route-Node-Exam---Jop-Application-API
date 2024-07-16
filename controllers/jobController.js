@@ -178,9 +178,10 @@ export const getJobsByFilters = async (req, res) => {
 // Apply for a Job
 export const applyToJob = async (req, res) => {
   try {
+    console.log(req.user)
     const newApplication = new Application({
       jobId: req.body.jobId,
-      userId: req.user._id,
+      userId: req.user.id,
       userTechSkills: req.body.userTechSkills,
       userSoftSkills: req.body.userSoftSkills,
       userResume: req.file.path, // Store the file path
