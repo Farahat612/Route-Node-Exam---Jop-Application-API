@@ -85,3 +85,42 @@ export const signIn = async (req, res) => {
     res.status(500).json({ error: err.message })
   }
 }
+
+// updateAccount
+export const updateAccount = async (req, res) => {
+  const { error } = updateUserSchema.validate(req.body)
+  if (error) return res.status(400).json({ error: error.details[0].message })
+
+  const userId = req.user.id
+  const updates = req.body
+
+  try {
+    // Check for email conflict
+    if (updates.email) {
+      const emailConflict = await User.findOne({ email: updates.email })
+      if (emailConflict && emailConflict._id.toString() !== userId) {
+        return res.status(400).json({ error: 'Email already in use' })
+      }
+    }
+
+    // Check for mobile number conflict
+    if (updates.mobileNumber) {
+      const mobileConflict = await User.findOne({
+        mobileNumber: updates.mobileNumber,
+      })
+      if (mobileConflict && mobileConflict._id.toString() !== userId) {
+        return res.status(400).json({ error: 'Mobile number already in use' })
+      }
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updates, {
+      new: true,
+    })
+    res.json({
+      message: 'Account updated successfully',
+      user: updatedUser,
+    })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
