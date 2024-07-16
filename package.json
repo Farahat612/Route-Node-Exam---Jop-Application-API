@@ -1,0 +1,11 @@
+{
+  "name": "jop-application-api",
+  "version": "1.0.0",
+  "description": "A simple Job Board and Applications API in node, express and MongoDB.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mohamed Farahat",
+  "license": "MIT"
+}
