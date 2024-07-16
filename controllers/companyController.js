@@ -1,7 +1,7 @@
 import Company from '../models/Company.js'
 import Job from '../models/Job.js'
 import Application from '../models/Application.js'
-import { companySchema, updateCompanySchema } from '../schemas/companyShemas.js'
+import { companySchema, updateCompanySchema } from '../schemas/companySchemas.js'
 
 // Add Company
 export const addCompany = async (req, res) => {
