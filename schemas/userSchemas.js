@@ -28,3 +28,9 @@ export const updatePasswordSchema = Joi.object({
 export const recoveryEmailSchema = Joi.object({
   email: Joi.string().email().required(),
 })
+
+export const resetPasswordSchema = Joi.object({
+  email: Joi.string().email().required(),
+  otp: Joi.string().required(),
+  newPassword: Joi.string().required(),
+})

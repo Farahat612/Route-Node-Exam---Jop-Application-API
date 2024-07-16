@@ -10,6 +10,7 @@ import {
   getAccountsByRecoveryEmail,
   updatePassword,
   forgetPassword,
+  resetPassword,
 } from '../controllers/userController.js'
 import auth from '../middleware/auth.js'
 
@@ -24,5 +25,6 @@ router.get('/getProfileDataForAnotherUser', auth, getProfileDataForAnotherUser)
 router.get('/getAccountsByRecoveryEmail', auth, getAccountsByRecoveryEmail)
 router.put('/updatePassword', auth, updatePassword)
 router.post('/forgetPassword', forgetPassword)
+router.put('/resetPassword', resetPassword)
 
 export default router

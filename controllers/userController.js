@@ -9,6 +9,7 @@ import {
   updatePasswordSchema,
   updateUserSchema,
   recoveryEmailSchema,
+  resetPasswordSchema,
 } from '../schemas/userSchemas.js'
 import { generateOTP, verifyOTP } from '../utils/otp.js'
 import { transporter } from '../config/nodemailer.js'
@@ -250,4 +251,33 @@ export const forgetPassword = async (req, res) => {
       return res.json({ message: 'OTP sent to your email' })
     }
   })
+}
+
+// Verify OTP for Password Reset
+export const resetPassword = async (req, res) => {
+  const { error } = resetPasswordSchema.validate(req.body)
+  if (error) return res.status(400).json({ error: error.details[0].message })
+
+  const { email, otp, newPassword } = req.body
+
+  // Verify OTP
+  if (!verifyOTP(email, otp)) {
+    return res.status(400).json({ error: 'Invalid or expired OTP' })
+  }
+
+  try {
+    const user = await User.findOne({
+      $or: [{ email }, { recoveryEmail: email }, { mobileNumber: email }],
+    })
+    if (!user) return res.status(400).json({ error: 'User not found' })
+
+    // Update password
+    const hashedPassword = await bcrypt.hash(newPassword, 10)
+    user.password = hashedPassword
+    await user.save()
+
+    res.json({ message: 'Password reset successfully' })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
 }
