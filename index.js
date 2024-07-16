@@ -5,6 +5,7 @@ import connectDB from './config/db.js'
 import errorHandler from './middleware/errorHandler.js'
 
 import userRoutes from './routes/userRoutes.js'
+import companyRoutes from './routes/companyRoutes.js'
 
 // Load env vars
 dotenv.config()
@@ -16,6 +17,7 @@ const app = express()
 app.use(express.json())
 // Routes
 app.use('/api/users', userRoutes)
+app.use('/api/companies', companyRoutes)
 
 // Error handler middleware
 app.use(errorHandler)
