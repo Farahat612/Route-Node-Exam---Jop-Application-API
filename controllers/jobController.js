@@ -45,3 +45,56 @@ export const addJob = async (req, res) => {
     res.status(500).json({ error: err.message })
   }
 }
+
+// Update Job
+export const updateJob = async (req, res) => {
+  const { error } = updateJobSchema.validate(req.body)
+  if (error) return res.status(400).json({ error: error.details[0].message })
+
+  const jobId = req.params.jobId
+
+  try {
+    const job = await Job.findById(jobId)
+    if (!job) return res.status(404).json({ error: 'Job not found' })
+
+    if (job.addedBy.toString() !== req.user.id) {
+      return res
+        .status(403)
+        .json({ error: 'Forbidden: You do not have the right permissions' })
+    }
+
+    const updatedJob = await Job.findByIdAndUpdate(jobId, req.body, {
+      new: true,
+      runValidators: true,
+    })
+
+    res.json({
+      message: 'Job updated successfully',
+      job: updatedJob,
+    })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
+
+// Delete Job
+export const deleteJob = async (req, res) => {
+  const jobId = req.params.jobId
+
+  try {
+    const job = await Job.findById(jobId)
+    if (!job) return res.status(404).json({ error: 'Job not found' })
+
+    if (job.addedBy.toString() !== req.user.id) {
+      return res
+        .status(403)
+        .json({ error: 'Forbidden: You do not have the right permissions' })
+    }
+
+    await Job.findByIdAndDelete(jobId)
+
+    res.json({ message: 'Job deleted successfully' })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
