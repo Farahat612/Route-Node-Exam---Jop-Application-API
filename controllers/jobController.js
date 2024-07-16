@@ -98,3 +98,31 @@ export const deleteJob = async (req, res) => {
     res.status(500).json({ error: err.message })
   }
 }
+
+// get all jobs with their companies information
+export const getAllJobsWithCompanies = async (req, res) => {
+  try {
+    // Fetch all jobs with the HR user populated
+    const jobsWithHR = await Job.find().populate('addedBy')
+
+    // Map through each job to fetch the corresponding company using the populated HR user's ID
+    const jobsWithCompanies = await Promise.all(
+      jobsWithHR.map(async (job) => {
+        const { addedBy: HR, ...rest } = job.toObject()
+        const company = await Company.findOne({ companyHR: HR._id })
+        return {
+          ...rest,
+          HR,
+          company,
+        }
+      })
+    )
+
+    res.json({
+      message: 'Jobs retrieved successfully',
+      jobs: jobsWithCompanies,
+    })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
