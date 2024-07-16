@@ -124,3 +124,32 @@ export const searchCompany = async (req, res) => {
     res.status(500).json({ error: err.message })
   }
 }
+
+// Get All Applications for a Specific Job
+export const getApplicationsForJob = async (req, res) => {
+  const jobId = req.params.jobId
+
+  try {
+    // Finding the job to ensure it belongs to the requesting company
+    const job = await Job.findById(jobId).populate('addedBy')
+    if (!job) return res.status(404).json({ error: 'Job not found' })
+
+    // Checking if the logged-in user is the company HR who posted the job
+    if (job.addedBy._id.toString() !== req.user.id) {
+      return res
+        .status(403)
+        .json({ error: 'Forbidden: You do not have the right permissions' })
+    }
+
+    const applications = await Application.find({ jobId }).populate('userId')
+    res.json({
+      message:
+        applications.length > 0
+          ? 'Applications retrieved successfully'
+          : 'No applications yet',
+      applications,
+    })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}

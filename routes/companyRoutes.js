@@ -9,6 +9,7 @@ import {
   deleteCompany,
   getCompanyData,
   searchCompany,
+  getApplicationsForJob,
 } from '../controllers/companyController.js'
 
 const router = express.Router()
@@ -37,6 +38,12 @@ router.get(
   auth,
   authorize('Company_HR', 'User'),
   searchCompany
+)
+router.get(
+  '/getApplicationsForJob/:jobId',
+  auth,
+  authorize('Company_HR'),
+  getApplicationsForJob
 )
 
 export default router
