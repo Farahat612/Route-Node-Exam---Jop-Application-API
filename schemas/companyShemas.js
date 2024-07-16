@@ -16,6 +16,8 @@ export const updateCompanySchema = Joi.object({
   description: Joi.string().optional(),
   industry: Joi.string().optional(),
   address: Joi.string().optional(),
-  numberOfEmployees: Joi.string().optional(),
+  numberOfEmployees: Joi.string()
+    .optional()
+    .pattern(/^\d+-\d+$/),
   companyEmail: Joi.string().email().optional(),
 })
