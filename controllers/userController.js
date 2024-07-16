@@ -48,3 +48,40 @@ export const signUp = async (req, res) => {
     res.status(500).json({ error: err.message })
   }
 }
+
+// signIn
+export const signIn = async (req, res) => {
+  const { email, password } = req.body
+  try {
+    const user = await User.findOne({
+      $or: [{ email }, { recoveryEmail: email }, { mobileNumber: email }],
+    })
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid credentials' })
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password)
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Invalid credentials' })
+    }
+
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '1d',
+      }
+    )
+    user.status = 'online'
+
+    await user.save()
+
+    res.json({
+      message: 'User signed in successfully',
+      token,
+      user,
+    })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
