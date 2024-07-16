@@ -2,6 +2,7 @@ import User from '../models/User.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import Joi from 'joi'
+import dotenv from 'dotenv'
 
 import {
   userSchema,
@@ -9,6 +10,10 @@ import {
   updateUserSchema,
   recoveryEmailSchema,
 } from '../schemas/userSchemas.js'
+import { generateOTP, verifyOTP } from '../utils/otp.js'
+import { transporter } from '../config/nodemailer.js'
+
+dotenv.config()
 
 // signup
 export const signUp = async (req, res) => {
@@ -215,4 +220,34 @@ export const updatePassword = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message })
   }
+}
+
+// Request OTP for Password Reset
+export const forgetPassword = async (req, res) => {
+  const { email } = req.body
+
+  // Validate email
+  const { error } = recoveryEmailSchema.validate({ email })
+  if (error) return res.status(400).json({ error: error.details[0].message })
+
+  // Generate OTP and send via email
+  const generatedOtp = generateOTP(email)
+  const mailOptions = {
+    from: {
+      name: 'Job Board',
+      address: process.env.EMAIL_USER,
+    },
+    to: email,
+    subject: 'Your OTP Code',
+    text: `Your OTP code is ${generatedOtp}`,
+  }
+
+  transporter.sendMail(mailOptions, (error, _info) => {
+    if (error) {
+      console.log(error)
+      return res.status(500).json({ error: 'Failed to send OTP' })
+    } else {
+      return res.json({ message: 'OTP sent to your email' })
+    }
+  })
 }
