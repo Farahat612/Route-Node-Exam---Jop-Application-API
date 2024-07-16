@@ -150,3 +150,29 @@ export const getJobsForCompany = async (req, res) => {
     res.status(500).json({ error: error.message })
   }
 }
+
+// Get Jobs by filters
+export const getJobsByFilters = async (req, res) => {
+  const { error } = filterJobSchema.validate(req.query)
+  if (error) return res.status(400).json({ error: error.details[0].message })
+
+  try {
+    const filters = {}
+    if (req.query.workingTime) filters.workingTime = req.query.workingTime
+    if (req.query.jobLocation) filters.jobLocation = req.query.jobLocation
+    if (req.query.seniorityLevel)
+      filters.seniorityLevel = req.query.seniorityLevel
+    if (req.query.jobTitle)
+      filters.title = { $regex: req.query.jobTitle, $options: 'i' }
+    if (req.query.technicalSkills)
+      filters.technicalSkills = { $in: req.query.technicalSkills.split(',') }
+
+    const jobs = await Job.find(filters)
+    res.status(200).json({
+      message: 'Jobs retrieved successfully',
+      jobs,
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+}
